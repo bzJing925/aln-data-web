@@ -1,7 +1,7 @@
 {
-  "generated_at": "2026-08-19T02:27:02.951131+00:00",
+  "generated_at": "2026-08-19T03:46:26.186054+00:00",
   "files": [
-    "devices.parquet",
+    "devices.arrow.gz",
     "batches.json",
     "mappings.json",
     "process.json",
@@ -9,7 +9,7 @@
     "fields.json",
     "baseline.json",
     "surr_meta.json",
-    "cell_means.parquet"
+    "cell_means.arrow.gz"
   ],
   "missing": [],
   "counts": {
