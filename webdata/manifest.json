@@ -1,0 +1,19 @@
+{
+  "generated_at": "2026-08-19T02:27:02.951131+00:00",
+  "files": [
+    "devices.parquet",
+    "batches.json",
+    "mappings.json",
+    "process.json",
+    "stats.json",
+    "fields.json",
+    "baseline.json",
+    "surr_meta.json",
+    "cell_means.parquet"
+  ],
+  "missing": [],
+  "counts": {
+    "devices": 50411,
+    "batches": 2
+  }
+}
