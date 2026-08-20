@@ -1,0 +1,104 @@
+name: ingest-share-pack
+
+on:
+  push:
+    branches: [main]
+    paths: ['uploads/*.zip']
+  pull_request:
+    paths: ['uploads/*.zip']
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: ingest
+  cancel-in-progress: false
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: pip install -r ci/requirements.txt
+      - run: cd ci && python -m pytest test_merge_share_pack.py -q
+
+  validate:
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: pip install -r ci/requirements.txt
+      - name: 校验分享包（不落盘）
+        run: |
+          set -e
+          for f in uploads/*.zip; do
+            [ -e "$f" ] || continue
+            python ci/merge_share_pack.py "$f" --check-only --repo-root .
+          done
+
+  ingest:
+    if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          path: main
+      - uses: actions/checkout@v4
+        with:
+          ref: gh-pages
+          path: site
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: pip install -r main/ci/requirements.txt
+
+      - name: 合并分享包
+        id: merge
+        run: |
+          set -e
+          cd main
+          shopt -s nullglob
+          packs=(uploads/*.zip)
+          if [ ${#packs[@]} -eq 0 ]; then
+            echo "没有待处理的分享包"
+            exit 0
+          fi
+          for f in "${packs[@]}"; do
+            python ci/merge_share_pack.py "$f" --repo-root .
+            mkdir -p processed
+            mv "$f" "processed/$(basename "$f")"
+          done
+
+      - name: 提交 canonical（main 分支）
+        run: |
+          cd main
+          if git diff --quiet && git diff --cached --quiet && [ -z "$(git status --porcelain)" ]; then
+            echo "无变化"
+            exit 0
+          fi
+          git add data/ webdata/ processed/ uploads/ || true
+          git -c user.name=github-actions -c user.email=actions@github.com \
+            commit -m "ingest: 合并分享包 $(date -u +%Y-%m-%dT%H:%M)"
+          git push origin main
+
+      - name: 更新 gh-pages 的 webdata
+        run: |
+          set -e
+          rm -rf site/webdata
+          cp -R main/webdata site/webdata
+          cd site
+          if git diff --quiet && [ -z "$(git status --porcelain)" ]; then
+            echo "webdata 无变化"
+            exit 0
+          fi
+          git add -A
+          git -c user.name=github-actions -c user.email=actions@github.com \
+            commit -m "deploy: 分享包合并 $(date -u +%Y-%m-%dT%H:%M)"
+          git push origin gh-pages
