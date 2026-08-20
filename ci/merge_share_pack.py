@@ -61,9 +61,11 @@ def _read_arrow_gz(path: Path) -> pa.Table:
 
 def _write_arrow_gz(df: pd.DataFrame, path: Path) -> None:
     table = pa.Table.from_pandas(df, preserve_index=False)
-    with gzip.open(str(path), "wb", compresslevel=6) as sink:
-        with pa.ipc.new_file(sink, table.schema) as w:
-            w.write_table(table)
+    with open(path, "wb") as raw:
+        with gzip.GzipFile(filename="", mode="wb", fileobj=raw,
+                           compresslevel=6, mtime=0) as sink:
+            with pa.ipc.new_file(sink, table.schema) as w:
+                w.write_table(table)
 
 
 def load_pack(pack_path: Path) -> tuple[dict, dict, pd.DataFrame]:
