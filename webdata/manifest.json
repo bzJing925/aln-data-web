@@ -1,1 +1,21 @@
-{"generated_at": "2026-08-30T16:52:47.284731+00:00", "files": ["devices.arrow.gz", "batches.json", "mappings.json", "process.json", "stats.json", "fields.json", "baseline.json", "surr_meta.json", "cell_means.arrow.gz"], "missing": [], "counts": {"devices": 50411, "batches": 2}}
+{
+  "generated_at": "2026-09-02T09:24:40.947226+00:00",
+  "files": [
+    "devices.arrow.gz",
+    "batches.json",
+    "mappings.json",
+    "process.json",
+    "stats.json",
+    "fields.json",
+    "baseline.json",
+    "cell_means.arrow.gz",
+    "stage1.onnx",
+    "stage2.onnx",
+    "surr_meta.json"
+  ],
+  "missing": [],
+  "counts": {
+    "devices": 110311,
+    "batches": 5
+  }
+}
