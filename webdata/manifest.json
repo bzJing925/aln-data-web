@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-02T09:24:40.947226+00:00",
+  "generated_at": "2026-09-07T07:09:44.457836+00:00",
   "files": [
     "devices.arrow.gz",
     "batches.json",
@@ -15,7 +15,7 @@
   ],
   "missing": [],
   "counts": {
-    "devices": 110311,
-    "batches": 5
+    "devices": 131841,
+    "batches": 6
   }
 }
